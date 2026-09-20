@@ -1,0 +1,49 @@
+#Add PostgreSQL APT repository for ununtu 24.04
+sudo apt update && sudo apt install -y curl ca-certificates
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+
+# Install PG14
+sudo apt update
+sudo apt install -y postgresql-14 postgresql-contrib-14
+
+# open postgresql.conf and allow password auth
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+#Add this line at the bottom:
+#host all  all     0.0.0.0/0       scram-sha-256
+
+
+
+ sudo -u postgres psql -c "CREATE DATABASE ehr_db;"
+
+ sudo -i -u postgres psql
+
+CREATE USER fde_admin WITH PASSWORD 'SecureEHR2026!';
+ALTER ROLE fde_admin SET client_encoding TO 'utf8';
+ALTER ROLE fde_admin SET  default_transaction_isolation TO 'read committed';
+ALTER ROLE fde_admin SET  timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE  ehr_db to fde_admin;
+
+
+\c ehr_db
+
+
+FRANT ALL ON SCHEMA public TO fde_admin;
+
+\q
+
+----------------------------------------------------
+
+uv pip install pandas psycopg2-binary python-dotenv sqlalchemy
+
+uv instructions --
+uv venv --python 3.12.  D:\FDE-Project\uv-venv\FDE-demo-clinical-env
+using Cpython 3.12.4
+
+creating a virtual environment  at  D:\FDE-Project\uv-venv\FDE-demo-clinical-env
+Activiate with: D:\FDE-Project\uv-venv\FDE-demo-clinical-env\Scripts\env
+
+
+python scripts/01_ingest_baseline_data.py
